@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>반려동물 기록 앱</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #eef8ef;
+      color: #263326;
+    }
+
+    .app {
+      max-width: 430px;
+      margin: 0 auto;
+      min-height: 100vh;
+      background: #f9fff9;
+      padding: 20px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.08);
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    h1, h2, h3 {
+      margin-top: 0;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 13px;
+      margin: 8px 0;
+      border: 1px solid #c8dec9;
+      border-radius: 12px;
+      font-size: 15px;
+      background: white;
+    }
+
+    textarea {
+      resize: none;
+      height: 80px;
+    }
+
+    button {
+      width: 100%;
+      padding: 13px;
+      border: none;
+      border-radius: 12px;
+      background: #79c686;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #62b870;
+    }
+
+    .sub-btn {
+      background: #b8dfbd;
+      color: #2f5f36;
+    }
+
+    .danger-btn {
+      background: #f08a8a;
+    }
+
+    .danger-btn:hover {
+      background: #e06f6f;
+    }
+
+    .login-box {
+      margin-top: 120px;
+      text-align: center;
+    }
+
+    .login-box h1 {
+      color: #4f9d5d;
+      margin-bottom: 30px;
+    }
+
+    .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .top button {
+      width: auto;
+      padding: 8px 12px;
+      font-size: 13px;
+      margin: 0;
+    }
+
+    .card {
+      background: white;
+      border-radius: 18px;
+      padding: 16px;
+      margin: 12px 0;
+      box-shadow: 0 4px 10px rgba(70, 120, 70, 0.12);
+    }
+
+    .pet-card {
+      cursor: pointer;
+      border-left: 7px solid #79c686;
+    }
+
+    .pet-card h3 {
+      margin-bottom: 6px;
+    }
+
+    .small {
+      font-size: 13px;
+      color: #6b7d6b;
+    }
+
+    .record-menu {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      margin: 15px 0;
+    }
+
+    .record-menu button {
+      font-size: 14px;
+      padding: 12px 5px;
+      margin: 0;
+    }
+
+    .record-item {
+      border-left: 5px solid #9bd6a4;
+      padding-left: 12px;
+      margin-top: 10px;
+    }
+
+    .empty {
+      text-align: center;
+      color: #789078;
+      padding: 30px 0;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #dff2e1;
+      color: #407849;
+      padding: 5px 9px;
+      border-radius: 20px;
+      font-size: 12px;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+
+    <!-- 로그인 화면 -->
+    <section id="loginPage">
+      <div class="login-box">
+        <h1>반려동물 기록 앱</h1>
+
+        <input 
+          id="studentId" 
+          type="text" 
+          value="2025131037"
+          placeholder="아이디를 입력하세요"
+        />
+
+        <button onclick="login()">로그인</button>
+      </div>
+    </section>
+
+    <!-- 홈 화면 -->
+    <section id="homePage" class="hidden">
+      <div class="top">
+        <h2>내 반려동물</h2>
+        <button class="sub-btn" onclick="logout()">로그아웃</button>
+      </div>
+
+      <div class="card">
+        <h3>동물 추가</h3>
+
+        <input 
+          id="petName" 
+          type="text" 
+          placeholder="동물 이름을 입력하세요" 
+        />
+
+        <input 
+          id="petType" 
+          type="text" 
+          placeholder="종류 예: 강아지, 고양이, 도마뱀" 
+        />
+
+        <button onclick="addPet()">동물 추가하기</button>
+      </div>
+
+      <div id="petList"></div>
+    </section>
+
+    <!-- 동물 상세 화면 -->
+    <section id="detailPage" class="hidden">
+      <div class="top">
+        <button class="sub-btn" onclick="goHome()">← 홈으로</button>
+        <button class="danger-btn" onclick="deleteCurrentPet()">동물 삭제</button>
+      </div>
+
+      <div class="card">
+        <h2 id="detailPetName"></h2>
+        <p id="detailPetType" class="small"></p>
+      </div>
+
+      <div class="card">
+        <h3>기록 추가</h3>
+
+        <select id="recordType">
+          <option value="급여">급여</option>
+          <option value="배변">배변</option>
+          <option value="건강상태">건강상태</option>
+        </select>
+
+        <textarea 
+          id="recordContent" 
+          placeholder="기록 내용을 입력하세요"
+        ></textarea>
+
+        <button onclick="addRecord()">기록 저장하기</button>
+      </div>
+
+      <div class="record-menu">
+        <button onclick="setFilter('전체')">전체</button>
+        <button onclick="setFilter('급여')">급여</button>
+        <button onclick="setFilter('배변')">배변</button>
+        <button onclick="setFilter('건강상태')">건강</button>
+      </div>
+
+      <div id="recordList"></div>
+    </section>
+
+  </div>
+
+  <script>
+    let pets = JSON.parse(localStorage.getItem("pets")) || [];
+    let currentPetId = null;
+    let currentFilter = "전체";
+
+    function savePets() {
+      localStorage.setItem("pets", JSON.stringify(pets));
+    }
+
+    function login() {
+      const id = document.getElementById("studentId").value.trim();
+
+      if (id === "") {
+        alert("아이디를 입력해주세요.");
+        return;
+      }
+
+      document.getElementById("loginPage").classList.add("hidden");
+      document.getElementById("homePage").classList.remove("hidden");
+
+      renderPets();
+    }
+
+    function logout() {
+      document.getElementById("homePage").classList.add("hidden");
+      document.getElementById("detailPage").classList.add("hidden");
+      document.getElementById("loginPage").classList.remove("hidden");
+    }
+
+    function addPet() {
+      const name = document.getElementById("petName").value.trim();
+      const type = document.getElementById("petType").value.trim();
+
+      if (name === "" || type === "") {
+        alert("동물 이름과 종류를 모두 입력해주세요.");
+        return;
+      }
+
+      const newPet = {
+        id: Date.now(),
+        name: name,
+        type: type,
+        records: []
+      };
+
+      pets.push(newPet);
+      savePets();
+
+      document.getElementById("petName").value = "";
+      document.getElementById("petType").value = "";
+
+      renderPets();
+    }
+
+    function renderPets() {
+      const petList = document.getElementById("petList");
+      petList.innerHTML = "";
+
+      if (pets.length === 0) {
+        petList.innerHTML = '<div class="empty">아직 등록된 동물이 없습니다.</div>';
+        return;
+      }
+
+      pets.forEach(function(pet) {
+        const card = document.createElement("div");
+        card.className = "card pet-card";
+
+        card.onclick = function() {
+          openPetDetail(pet.id);
+        };
+
+        card.innerHTML = `
+          <h3>${pet.name}</h3>
+          <p class="small">${pet.type}</p>
+          <span class="badge">기록 ${pet.records.length}개</span>
+        `;
+
+        petList.appendChild(card);
+      });
+    }
+
+    function openPetDetail(id) {
+      currentPetId = id;
+      currentFilter = "전체";
+
+      const pet = pets.find(function(item) {
+        return item.id === id;
+      });
+
+      if (!pet) {
+        return;
+      }
+
+      document.getElementById("homePage").classList.add("hidden");
+      document.getElementById("detailPage").classList.remove("hidden");
+
+      document.getElementById("detailPetName").innerText = pet.name;
+      document.getElementById("detailPetType").innerText = pet.type;
+
+      renderRecords();
+    }
+
+    function goHome() {
+      document.getElementById("detailPage").classList.add("hidden");
+      document.getElementById("homePage").classList.remove("hidden");
+
+      renderPets();
+    }
+
+    function addRecord() {
+      const type = document.getElementById("recordType").value;
+      const content = document.getElementById("recordContent").value.trim();
+
+      if (content === "") {
+        alert("기록 내용을 입력해주세요.");
+        return;
+      }
+
+      const pet = pets.find(function(item) {
+        return item.id === currentPetId;
+      });
+
+      if (!pet) {
+        return;
+      }
+
+      const now = new Date();
+
+      const newRecord = {
+        id: Date.now(),
+        type: type,
+        content: content,
+        date: now.toLocaleString("ko-KR")
+      };
+
+      pet.records.unshift(newRecord);
+      savePets();
+
+      document.getElementById("recordContent").value = "";
+
+      renderRecords();
+    }
+
+    function setFilter(type) {
+      currentFilter = type;
+      renderRecords();
+    }
+
+    function renderRecords() {
+      const recordList = document.getElementById("recordList");
+      recordList.innerHTML = "";
+
+      const pet = pets.find(function(item) {
+        return item.id === currentPetId;
+      });
+
+      if (!pet) {
+        return;
+      }
+
+      let records = pet.records;
+
+      if (currentFilter !== "전체") {
+        records = records.filter(function(record) {
+          return record.type === currentFilter;
+        });
+      }
+
+      if (records.length === 0) {
+        recordList.innerHTML = '<div class="empty">아직 기록이 없습니다.</div>';
+        return;
+      }
+
+      records.forEach(function(record) {
+        const card = document.createElement("div");
+        card.className = "card record-item";
+
+        card.innerHTML = `
+          <strong>${record.type}</strong>
+          <p>${record.content}</p>
+          <p class="small">${record.date}</p>
+        `;
+
+        recordList.appendChild(card);
+      });
+    }
+
+    function deleteCurrentPet() {
+      const pet = pets.find(function(item) {
+        return item.id === currentPetId;
+      });
+
+      if (!pet) {
+        return;
+      }
+
+      const ok = confirm(pet.name + "을/를 삭제할까요? 기록도 함께 삭제됩니다.");
+
+      if (!ok) {
+        return;
+      }
+
+      pets = pets.filter(function(item) {
+        return item.id !== currentPetId;
+      });
+
+      savePets();
+      currentPetId = null;
+
+      goHome();
+    }
+  </script>
+</body>
+</html>
